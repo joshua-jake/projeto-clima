@@ -8,6 +8,7 @@ document.querySelector('.busca').addEventListener('submit', async (event)=>{
     //saber se o usuario digitou alguma coisa
 
         if(input !== ''){
+            clearInfon();
             showWarning('Carregando...');
 
             //Montando a url para pagar os dados da API
@@ -19,19 +20,72 @@ document.querySelector('.busca').addEventListener('submit', async (event)=>{
 
             //Verificar agora se ele encontrou a cidade que estou procurando 
 
+            if(json.cod === 200) {
+                
+                showInfo({
+                    name: json.name, //name da cidade
+                    country: json.sys.country,//pais
+                    temp: json.main.temp, //temperatura,            
+                    tempIcon: json.weather[0].icon,//icone da temperatura céu, chuva ...
+                    windSpeed: json.wind.speed, //pegando informações do vento 
+                    windAngle: json.wind.deg //Angulo do vendo 
 
+
+                });
+            }
+            else {
+
+                clearInfon();
+                showWarning('Não encontramos esta localização!');
+            }
+          
 
 
         }
-       
+        else {
+            clearInfon();
+        }
         
-
-   
-
+  
 });
+
+
+// Criando uma função para mostrar as Informações! 
+
+function showInfo(json) {
+    showWarning('');
+
+    document.querySelector('.titulo').innerHTML = `${json.name}, ${json.country}`;
+
+    document.querySelector('.tempInfo').innerHTML = `${json.temp}<sup>ºC</sup>`;
+
+    document.querySelector('.ventoInfo').innerHTML = `${json.temp}<span>km/h</span>`;
+
+    //Trocando a imagens da url 
+    document.querySelector('.temp img').setAttribute('src', `http://openweathermap.org/img/wn/${json.tempIcon}@2x.png`);
+
+    //Trocando a posição do do icone do vento 
+    
+    document.querySelector('.ventoPonto').style.transform = `rotate(${json.windAngle-90}deg)`;
+    
+    document.querySelector('.resultado').style.display = 'block';
+    
+
+}
+
+
+
+//Criando uma Função para limpar 
+
+function clearInfon() {
+    showWarning('');
+    document.querySelector('.resultado').style.display = 'none';
+}
+
 
 //função para mostrar ou remover um aviso! 
 
 function showWarning(msg) {
     document.querySelector('.aviso').innerHTML = msg;
 }
+
